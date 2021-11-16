@@ -1,0 +1,10 @@
+{
+  "name": "blockfrost-nft-helper",
+  "version": "1.0.0",
+  "dependencies": {
+    "@blockfrost/blockfrost-js": "^2.0.2",
+    "dotenv": "^10.0.0",
+    "json2csv": "^5.0.6",
+    "lodash": "^4.17.11"
+  }
+}

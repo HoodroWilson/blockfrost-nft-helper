@@ -168,51 +168,7 @@ const app = async () => {
 
     const outFileType = config.format != null && config.format === "csv" ? "csv" : "json";
     const outFileName = configurationFileName + "." + outFileType;
-    // TODO: Update to use the path.separator type concatenation
-    const outFilePath = '../output/' + path.basename(__filename).split(".")[0] + '/' + outFileName;
-
-    // TODO: Move file export to a shared function
-
-    // Format the data in the proper way based on the file type
-    let outputData = null;
-    if(config.format != null && config.format.includes("csv")) {
-        if(config.flatten != null && config.flatten.key != null && config.flatten.label != null) {
-            assets = _.map(assets, (a) => {
-                let r = {}
-                r[config.flatten.label] = a[config.flatten.key];
-                return r;
-            });
-        }
-
-        try {
-            outputData = parse(assets, {});
-        } catch(err) {
-            outputData = null;
-            console.error(err);
-        }
-    } else {
-        if(config.flatten != null && config.flatten.key != null && config.flatten.label != null) {
-            let flatAssets = _.map(assets, (a) => {
-                return a[config.flatten.key];
-            });
-            assets = {};
-            assets[config.flatten.label] = flatAssets;
-        }
-        outputData = JSON.stringify(assets, null, '\t');
-    }
-
-    if(outputData != null) {
-        await fs.writeFile(outFilePath, outputData, err => {
-            if(err) {
-                console.log('output file could not be created ' + outFileName);
-                console.error(err);
-                return;
-            }
-        });
-        console.log('output file created ' + outFileName);
-    } else {
-        console.log('output file wasn\'t created ' + outFileName);
-    }
+    await helper.exportFile(assets, outFileName, __filename, outFileType, config.flatten);
 
     console.log("ran in " + Math.floor((Date.now() - startTime) / 1000) + " seconds");
     console.log("finished - "  + JSON.stringify(track));

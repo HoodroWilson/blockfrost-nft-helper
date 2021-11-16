@@ -11,6 +11,7 @@ These scripts can solve any of these complexities (and more) that you may face w
 * Getting the details of each mint transaction from an NFT drop given a policy ID
 * Getting a list of current wallet addresses for every NFT asset given an array of assets
 * Getting a list of mint wallet addresses for every NFT asset given a policy ID
+* Getting a list of all transactions for payments to an array of addresses
 
 Used to analyze the blockchain for [Cardano Caricatures](https://www.cardanocaricatures.com/) and [Old Money](https://www.oldmoney.io/).
 
@@ -113,7 +114,10 @@ Here are some example `.json` configuration files:
   "format": "json",
   "data": ["details", "mint", "mint_address", "current_address"],
   "metadata": ["Volume"],
-  "flatten": { "key": "currentHolderAddress", "label": "addresses" }
+  "flatten": { 
+    "key": "currentHolderAddress",
+    "label": "addresses"
+  }
 }
 ```
 
@@ -168,7 +172,93 @@ Here are the output options controlled by setting the `data` array in the config
 
 ---
 
+## `getTransactionsFromAddress.js`
+
+_Given an array of addresses it can get all the payments made to that address_
+
+### Overview
+
+* This script takes a `.json` file that outlines which addressees to analyze and how it should be done
+* It will output the results in the specified format with a filename that matches the `.json` file
+
+### How to run
+
+1. Create a `.json` configuration file in the `/configuration/getTransactionsFromAddress` folder
+2. Run using `node getTransactionsFromAddress.js NAME_OF_JSON_FILE_WITH_NO_EXTENSION`
+3. It will output the results in the `/output/getTransactionsFromAddress` folder
+
+### How to configure
+
+Required configuration values:
+
+* **addresses**
+  * an array of addresses to analyze
+  * ex: `["addr1q94x05jpck25fwvd53s8p6rsuvhcpds9dc98mk3gz0eq8fnp0l3gqulw7ykn9rk9qr7tgly9dtv6ugh950wk0z4njm4qmtwks2"]`
+
+Optional configuration values:
+
+* **limit**
+  * how many transactions to process
+  * if not provided, it will analyze every transaction
+  * ex: `500`
+* **format**
+  * how to format the output
+  * if not provided, it will default to `json`
+  * ex: `csv` or `json`
+* **flatten**
+  * specify a `key` for a single data point that you want flattened
+  * the `key` has to match one of the keys in `data`
+  * specify a `label` for the json key or column header for the single data point
+  * flattened values in a `json` format are all in a single array with the `label` as the key
+  * flattened values in a `csv` format are in a single column
+
+Here are some example `.json` configuration files:
+
+```json
+{
+  "addresses": [
+    "addr1q94x05jpck25fwvd53s8p6rsuvhcpds9dc98mk3gz0eq8fnp0l3gqulw7ykn9rk9qr7tgly9dtv6ugh950wk0z4njm4qmtwks2"
+  ]
+}
+```
+
+```json
+{
+  "format": "csv",
+  "limit": 1000,
+  "flatten": {
+    "key": "paidAddress",
+    "label": "addresses"
+  },
+  "addresses": [
+    "addr1q94x05jpck25fwvd53s8p6rsuvhcpds9dc98mk3gz0eq8fnp0l3gqulw7ykn9rk9qr7tgly9dtv6ugh950wk0z4njm4qmtwks2",
+    "addr1qxkaltt8g8jpfxz36dqj9dgs20mlwj0pel4e70cqt4hh9mrp0l3gqulw7ykn9rk9qr7tgly9dtv6ugh950wk0z4njm4q4dyptp"
+  ]
+}
+
+```
+
+Here are the output key/value pairs:
+
+```json
+[
+  {
+    "paidAddress": "addr1q94x05jpck25fwvd53s8p6rsuvhcpds9dc98mk3gz0eq8fnp0l3gqulw7ykn9rk9qr7tgly9dtv6ugh950wk0z4njm4qmtwks2",
+    "payerAddress": "addr1q8sq4ujzmhgn4kccrn6nmayrvlgqrwzge09xztpmwx5kt0pvhw205x5weeh4hm7lupe5npjcrl0xyh4yvtjdd0wfyz3s2p3m8y",
+    "transactionHash": "53a8a15bbdbb102e7f4dd20ed5046970e7f62b0698bb3b4410690ca354dd8312",
+    "transactionTime": "2021-11-11T17:34:52.000Z",
+    "amount": 50,
+    "outputUTXOCount": 1
+  }
+]
+```
+
+---
+
 ## Release Notes
+
+### 2.0.0
+  * Added the initial version of `getTransactionsFromAddress.js`
 
 ### 1.0.0
   * Initialized the repo/codebase
